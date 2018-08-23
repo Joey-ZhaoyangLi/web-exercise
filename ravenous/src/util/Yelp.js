@@ -6,10 +6,16 @@ const Yelp = {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         }
-    }).then(response => response.json())
+    }).then(response => {
+      console.log(response)
+      if(response.ok){
+        return response.json()
+      } else{
+        throw new Error('Request failed')
+      }
+    })
     .then(jsonResponse => {
       if (jsonResponse.businesses){
-        console.log(jsonResponse)
         return jsonResponse.businesses.map(business => {
           return {
             id: business.id,
@@ -22,9 +28,13 @@ const Yelp = {
             category: business.categories[0].title,
             rating: business.rating,
             reviewCount: business.review_count,
+            url: business.url,
           }
         })
       }
+    })
+    .catch(error=> {
+      console.log(error)
     })
   }
 }
