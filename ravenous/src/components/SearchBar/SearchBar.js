@@ -1,6 +1,6 @@
 import React from 'react'
 import './SearchBar.css'
-
+// import Script from 'react-load-script'
 const sortByOptions = {
   'Best Match': 'best_match',
   'Highest Rated': 'rating',
@@ -20,6 +20,8 @@ class SearchBar extends React.Component {
     this.handleTermChange = this.handleTermChange.bind(this)
     this.getSortByClass = this.getSortByClass.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
+    // this.handleScriptLoad = this.handleScriptLoad.bind(this)
   }
 
   getSortByClass(value) {
@@ -34,6 +36,7 @@ class SearchBar extends React.Component {
     this.setState({
       sortBy: value,
     })
+    this.props.searchYelp(this.state.term, this.state.location, this.state.sortBy)
   }
 
   handleTermChange(event) {
@@ -49,8 +52,8 @@ class SearchBar extends React.Component {
   }
 
   handleSearch(event) {
-    this.props.searchYelp(this.state.term, this.state.location, this.state.sortBy)
     event.preventDefault()
+    this.props.searchYelp(this.state.term, this.state.location, this.state.sortBy)
   }
 
   renderSortByOptions() {
@@ -66,17 +69,40 @@ class SearchBar extends React.Component {
     })
   }
 
+  handleKeyPress(event) {
+    event.preventDefault()
+    if(event.key === 'Enter'){
+      this.props.searchYelp(this.state.term, this.state.location, this.state.sortBy)
+    }
+  }
+
+  // handlePlaceSelect() {
+  //   let placeResult = this.autocomplete.getPlace()
+  //   let addresses = placeResult.formatted_address
+  //   this.setState({
+  //     location: addresses
+  //   })
+  // }
+
+  // handleScriptLoad() {
+  //   console.log('script loaded')
+  //   this.autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'), {})
+  //   this.autocomplete.addListener('place_changed', this.handlePlaceSelect)
+  //   console.log(this.autocomplete)
+  // }
+
   render () {
     return (
       <div className="SearchBar">
         <div className="SearchBar-sort-options">
-          <ul>
+          <ul> 
             {this.renderSortByOptions()}
           </ul>
-        </div>
+        </div>  
         <div className="SearchBar-fields">
-          <input placeholder="Search Businesses"  onChange={this.handleTermChange}/>
-          <input placeholder="Where?" onChange={this.handleLocationChange}/>
+          <input placeholder="Search Businesses" text={this.state.term} onChange={this.handleTermChange} onKeyUp={this.handleKeyPress}/>
+          {/* <Script url="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfGdfISRPNuVh6svdUPltzOvfCb68Ss9A&libraries=places" onLoad={this.handleScriptLoad} /> */}
+          <input placeholder="Where?" onChange={this.handleLocationChange} onKeyUp={this.handleKeyPress} />
         </div>
         <div className="SearchBar-submit" onClick={this.handleSearch}>
           <a>Let's Go</a>
